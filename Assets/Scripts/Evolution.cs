@@ -11,6 +11,8 @@ public class Evolution : MonoBehaviour {
     public int generations = 1;
     public float simulationTime = 15f;
     public int variationsPerGeneration = 100;
+    public int minMutations = 1;
+    public int maxMutations = 5;
 
     
     private Vector3 distance = new Vector3(0, 10, 0);
@@ -35,6 +37,8 @@ public class Evolution : MonoBehaviour {
             EvaluateScore();
                
             DestroyCreatures();
+
+            yield return new WaitForSeconds(1f);
         }
 
         PrefabUtility.CreatePrefab("Assets/Best/new" + DateTime.Now.ToString("dd h mm tt") + ".prefab", CreateBestCreature());
@@ -44,7 +48,13 @@ public class Evolution : MonoBehaviour {
     {
         for(int i = 0; i < variationsPerGeneration; i++)
         {
-            Genome genome = bestGenome.Clone().Mutate();
+            Genome genome = bestGenome.Clone();
+
+            int mutationNum = UnityEngine.Random.Range(minMutations, maxMutations + 1);
+            for(int j = 0; j < mutationNum; j++)
+            {
+                genome.Mutate();
+            }
 
             Vector3 position = distance * i;
             GameObject simulation = Instantiate(simulationPrefab, position, Quaternion.identity) as GameObject;
